@@ -8,7 +8,7 @@ class Node{
         Node();
         Node(char c, int l, int r);
         void print();
-        Node shift(int i);
+        void shift(int i);
     
     private:
         char letter;
@@ -31,7 +31,7 @@ Node::Node(char c, int l, int r){
     right = r;
 }
 
-Node Node::shift(int i){
+void Node::shift(int i){
     if (left != -1){
         left += i;
     }
@@ -49,7 +49,7 @@ class Automaton{
         Automaton();
         Automaton(char letter);
         void concat(Automaton Aut2);
-        Automaton star();
+        void star();
         void add(Automaton Aut2);
         Automaton Expr();
         Automaton Term ();
@@ -104,41 +104,54 @@ bool Automaton::token_is_letter(){
 }
 
 void Automaton::print(){
-    for (Node n: mat){
-        n.print();
+    for (unsigned int i = 1; i < mat.size(); i++){
+        cout << i << " : ";
+        mat[i].print();
     }
 }
 
 void Automaton::concat(Automaton Aut2) {
-    int i2 = mat.size();
+    int iAut1 = mat.size();
 
+    mat.at(f) = Node(' ', Aut2.i + iAut1 - 1, -1);;
 
-    cout <<" what the heeel" << endl;
-    for (int i=1; i < Aut2.mat.size(); i++){
+    for (unsigned int i=1; i < Aut2.mat.size() - 1; i++){
         Node n = Aut2.mat.at(i);
-        n.shift(i2 - 1);
+        n.shift(iAut1 - 1);
         mat.push_back(n);
     }
-    cout << "NO WAAaaAyy" << endl;
+    mat.push_back(Node());
+    f = mat.size() - 1;
 }
 
-Automaton Automaton::star(){
+void Automaton::star(){
+    Node n = Node(' ', i, mat.size() + 1);
 
+    mat.at(f) = n;
+    mat.push_back(n);
+    mat.push_back(Node());
+
+    i = mat.size() - 2;
+    f = mat.size() - 1;
 }
 
 void Automaton::add(Automaton Aut2){
-    int f = mat.size() + Aut2.mat.size();
-    int i2 = mat.size();
+    int fAut1 = mat.size() + Aut2.mat.size();
+    int iAut2 = mat.size();
 
-    mat.back() = Node(' ', f, -1);
-    for (int i=1; i < Aut2.mat.size(); i++){
-        Node n = Aut2.mat.at(i);
-        n.shift(i2 - 1);
+    mat.back() = Node(' ', fAut1, -1);
+
+    for (unsigned int j=1; j < Aut2.mat.size(); j++){
+        Node n = Aut2.mat.at(j);
+        n.shift(iAut2 - 1);
         mat.push_back(n);
     }
-    mat.back() = Node(' ', f, -1);
-    mat.push_back(Node(' ', 1, i2) );
+    mat.back() = Node(' ', fAut1, -1);
+    mat.push_back(Node(' ', i, iAut2) );
     mat.push_back(Node());
+
+    f = mat.size() - 1;
+    i = mat.size() - 2;
 }
 
 
@@ -148,7 +161,6 @@ Automaton Automaton::Expr() {
     if ( token == '|' ){ 
         next_token();
         Automaton Aut2 = Expr();
-        cout << "TO ADD" << endl;
         Aut1.add(Aut2);
     }
     return Aut1;
@@ -168,7 +180,7 @@ Automaton Automaton::Fact () {
     Automaton Aut = Automaton();
     if ( token == '('){ 
         next_token();
-        Automaton Aut = Expr(); // 11,12 shit? 
+        Automaton Aut = Expr();
         if ( token == ')' ) {
             next_token();
         }
@@ -191,7 +203,6 @@ Automaton Automaton::Fact () {
 
     if (token == '*'){ // eventueel while? TODO decide
         // pas ster toe op Aut; // TODO
-        cout << "astar" << endl;
         next_token();
     }
     return Aut;
@@ -200,9 +211,14 @@ Automaton Automaton::Fact () {
 int main(){
     Automaton Aut1 = Automaton('a');
     Automaton Aut2 = Automaton('b');
+    // Aut1.print();
+    // Aut2.print();
+    Aut1.add(Aut2);
     Aut1.print();
+    Aut2.concat(Aut1);
+    cout << endl;
     Aut2.print();
-    Aut1.concat(Aut2);
+    Aut2.star();
     cout << "FIN" << endl;
-    Aut1.print();
+    Aut2.print();
 }
