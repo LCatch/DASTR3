@@ -209,16 +209,6 @@ Automaton Automaton::Fact () {
 } // Fact
 
 int main(){
-    Automaton Aut1 = Automaton('a');
-    Automaton Aut2 = Automaton('b');
-    // Aut1.print();
-    // Aut2.print();
-    Aut1.add(Aut2);
-    Aut1.print();
-    Aut2.concat(Aut1);
-    cout << endl;
-    Aut2.print();
-    Aut2.star();
-    cout << "FIN" << endl;
-    Aut2.print();
+    Automaton Aut = Automaton();
+    Aut = Aut.Expr();
 }
