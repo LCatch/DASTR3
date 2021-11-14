@@ -5,10 +5,13 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <sstream>
+#include <fstream>
 #include "node.h"
 
 using namespace std;
 
+int len_expr;
 
 class Automaton{
     public:
@@ -28,7 +31,7 @@ class Automaton{
         bool token_is_letter();
         char token; // TODO move to private
 
-        void clear();
+        void overwrite(Automaton Aut);
         void read_expr();
 
     private:
@@ -43,13 +46,13 @@ Automaton::Automaton(){
     i = -1;
     f = -1;
     token = ' ';
-    len = 0;
+    len_expr = 0;
     mat.push_back(Node()); // add emtpy node at beginning
 }
 
 Automaton::Automaton(char letter){
     token = ' ';
-    len = 2;
+    len_expr = 0;
     i = 1;
     f = 2;
     mat.push_back(Node()); // add emtpy node at beginning
@@ -178,22 +181,27 @@ Automaton Automaton::Fact () {
     return Aut;
 } // Fact
 
-void Automaton::clear(){
+void Automaton::overwrite(Automaton Aut){
     mat.clear();
+    for (unsigned int j=0; j<Aut.mat.size(); j++){
+        mat.push_back(Aut.mat.at(j));
+    }
     token = ' ';
-    i = f = -1;
+    i = Aut.i;
+    f = Aut.f;
 }
 
 void Automaton::read_expr(){
+    Automaton Aut = Automaton();
     string line;
     string str;
     getline(cin, line);
     
     istringstream is(line);
+    len_expr = line.size();
 
-    clear();
+    overwrite(Aut.Expr());
 
-    Aut = Aut.Expr();
 }
 
 #endif

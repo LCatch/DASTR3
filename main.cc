@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sstream>
+#include <fstream>
 #include "node.h"
 #include "automaton.h"
 
@@ -27,11 +29,11 @@ void menu(){
             exit = true;
         }
 
-        else if (in == 'exp'){
+        else if (in == "exp"){
             Aut.read_expr();
         }
-        else if (in == 'dot'){
-            cout < "dot" << endl;
+        else if (in == "dot"){
+            cout << "dot" << endl;
         }
         else{
             cout << "Command unclear" << endl;
@@ -42,5 +44,6 @@ void menu(){
 
 int main(){
     Automaton Aut = Automaton();
-    Aut = Aut.Expr();
+    Aut.read_expr();
+    Aut.print();
 }
