@@ -1,53 +1,20 @@
+
+#ifndef AUTOMATON_H
+#define AUTOMATON_H
+
 #include <iostream>
 #include <vector>
+#include <string>
+#include "node.h"
 
 using namespace std;
 
-class Node{
-    public:
-        Node();
-        Node(char c, int l, int r);
-        void print();
-        void shift(int i);
-    
-    private:
-        char letter;
-        int left;
-        int right;
-};
-
-// Create an empty node that points to the right.
-Node::Node(){
-    letter = ' ';
-    left = -1;
-    right = -1;
-}
-
-// Create node with a character 'c' which points to two other nodes at
-// indexes 'l' and 'r'.
-Node::Node(char c, int l, int r){
-    letter = c;
-    left = l;
-    right = r;
-}
-
-void Node::shift(int i){
-    if (left != -1){
-        left += i;
-    }
-    if (right != -1){
-        right += i;
-    }
-}
-
-void Node::print(){
-    cout << letter << ' ' << left << ' ' << right << endl;
-}
 
 class Automaton{
     public:
         Automaton();
         Automaton(char letter);
+
         void concat(Automaton Aut2);
         void star();
         void add(Automaton Aut2);
@@ -61,10 +28,13 @@ class Automaton{
         bool token_is_letter();
         char token; // TODO move to private
 
+        void clear();
+        void read_expr();
+
     private:
         // char token;
         vector<Node> mat;
-        int len;
+        // int len;
         int i;
         int f;
 };
@@ -157,7 +127,7 @@ void Automaton::add(Automaton Aut2){
 
 Automaton Automaton::Expr() {
     Automaton Aut1 = Term();
-    Aut1.print();
+    // Aut1.print();
     if ( token == '|' ){ 
         next_token();
         Automaton Aut2 = Expr();
@@ -176,11 +146,11 @@ Automaton Automaton::Term () {
 } // Term
 
 Automaton Automaton::Fact () {
-    cout << "TOK: " << token << endl;
+    // cout << "TOK: " << token << endl;
     Automaton Aut = Automaton();
     if ( token == '('){ 
         next_token();
-        Automaton Aut = Expr();
+        Aut = Expr();
         if ( token == ')' ) {
             next_token();
         }
@@ -198,17 +168,32 @@ Automaton Automaton::Fact () {
     }
     else{
         cout << "bad shit 2" << endl; // TODODOD
-        return Automaton();
+        return Aut;
     }
 
-    if (token == '*'){ // eventueel while? TODO decide
-        // pas ster toe op Aut; // TODO
+    if (token == '*'){ 
+        Aut.star();
         next_token();
     }
     return Aut;
 } // Fact
 
-int main(){
-    Automaton Aut = Automaton();
+void Automaton::clear(){
+    mat.clear();
+    token = ' ';
+    i = f = -1;
+}
+
+void Automaton::read_expr(){
+    string line;
+    string str;
+    getline(cin, line);
+    
+    istringstream is(line);
+
+    clear();
+
     Aut = Aut.Expr();
 }
+
+#endif
