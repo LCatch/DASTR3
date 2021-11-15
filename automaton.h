@@ -21,13 +21,13 @@ class Automaton{
         void concat(Automaton Aut2);
         void star();
         void add(Automaton Aut2);
-        Automaton Expr();
-        Automaton Term ();
-        Automaton Fact ();
+        Automaton Expr(istringstream &is);
+        Automaton Term (istringstream &is);
+        Automaton Fact (istringstream &is);
 
         void print();
 
-        void next_token();
+        void next_token(istringstream &is);
         bool token_is_letter();
         char token; // TODO move to private
 
@@ -60,15 +60,16 @@ Automaton::Automaton(char letter){
     mat.push_back(Node());
 }
 
-void Automaton::next_token(){
+void Automaton::next_token(istringstream &is){
     cout << "in next" << endl;
-    if (cin.eof()){
-        cout << "eof" << endl;
-        token = ' ';
-    }
-    else{
-        cin >> token;
-    }
+    // if (cin.eof()){
+    //     cout << "eof" << endl;
+    //     token = ' ';
+    // }
+    // else{
+    //     cin >> token;
+    // }
+    is >> token;
     cout << "NEXT: " << token << endl;
 }
 
@@ -128,34 +129,38 @@ void Automaton::add(Automaton Aut2){
 }
 
 
-Automaton Automaton::Expr() {
-    Automaton Aut1 = Term();
+Automaton Automaton::Expr(istringstream &is) {
+    cout << "EXPR" << endl; 
+    Automaton Aut1 = Term(is);
     // Aut1.print();
     if ( token == '|' ){ 
-        next_token();
-        Automaton Aut2 = Expr();
+        next_token(is);
+        Automaton Aut2 = Expr(is);
         Aut1.add(Aut2);
     }
     return Aut1;
 } // Expr
 
-Automaton Automaton::Term () {
-    Automaton Aut1 = Fact();
+Automaton Automaton::Term (istringstream &is) {
+    cout << "TERMO" << endl;
+    Automaton Aut1 = Fact(is);
     if ( token_is_letter() | (token == '(') ){
-        Automaton Aut2 = Term();
+        Automaton Aut2 = Term(is);
         Aut1.concat(Aut2);
     }
     return Aut1;
 } // Term
 
-Automaton Automaton::Fact () {
+Automaton Automaton::Fact (istringstream &is) {
+    cout << "FACT" << endl;
     // cout << "TOK: " << token << endl;
     Automaton Aut = Automaton();
+    cout << "tok: " << token << endl;
     if ( token == '('){ 
-        next_token();
-        Aut = Expr();
+        next_token(is);
+        Aut = Expr(is);
         if ( token == ')' ) {
-            next_token();
+            next_token(is);
         }
         else{
             cout << "bad shit" << endl;
@@ -166,8 +171,12 @@ Automaton Automaton::Fact () {
         Aut = Automaton(token); // TODO actually make a thing
         // Aut.print();
         // cout << "bb" << endl;
-        next_token();
+        next_token(is);
         // cout << "aaa" << endl;
+    }
+    else if (token == '$'){
+        cout << "EMPTY TOKEN" << endl;
+        return Aut;
     }
     else{
         cout << "bad shit 2" << endl; // TODODOD
@@ -176,7 +185,7 @@ Automaton Automaton::Fact () {
 
     if (token == '*'){ 
         Aut.star();
-        next_token();
+        next_token(is);
     }
     return Aut;
 } // Fact
@@ -195,12 +204,16 @@ void Automaton::read_expr(){
     Automaton Aut = Automaton();
     string line;
     string str;
-    getline(cin, line);
-    
-    istringstream is(line);
-    len_expr = line.size();
 
-    overwrite(Aut.Expr());
+    getline(cin, line);
+    line += "$";
+    istringstream is(line);
+    // len_expr = line.size();
+    
+
+    Aut.next_token(is);
+
+    overwrite(Aut.Expr(is));
 
 }
 

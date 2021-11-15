@@ -35,6 +35,9 @@ void menu(){
         else if (in == "dot"){
             cout << "dot" << endl;
         }
+        else if (in == "p"){
+            Aut.print();
+        }
         else{
             cout << "Command unclear" << endl;
         }
@@ -43,7 +46,8 @@ void menu(){
 }
 
 int main(){
-    Automaton Aut = Automaton();
-    Aut.read_expr();
-    Aut.print();
+    // Automaton Aut = Automaton();
+    // Aut.read_expr();
+    // Aut.print();
+    menu();
 }
