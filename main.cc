@@ -33,7 +33,7 @@ void menu(){
             Aut.read_expr();
         }
         else if (in == "dot"){
-            cout << "dot" << endl;
+            Aut.print_dot();
         }
         else if (in == "p"){
             Aut.print();

@@ -8,6 +8,7 @@
 #include <sstream>
 #include <fstream>
 #include "node.h"
+#include "basic.h"
 
 using namespace std;
 
@@ -33,6 +34,7 @@ class Automaton{
 
         void overwrite(Automaton Aut);
         void read_expr();
+        void print_dot();
 
     private:
         // char token;
@@ -217,4 +219,25 @@ void Automaton::read_expr(){
 
 }
 
+void Automaton::print_dot(){
+    string filename;
+    string letter;
+    cin.ignore();
+    getline(cin, filename);
+    ofstream out(filename);
+    out << "digraph G {\n\trankdir=\"LR\" \n";
+    for(unsigned int j=1; j<mat.size()-1; j++){
+        out << "\t" + to_string(j) + " -> " + to_string(mat[j].left);
+        if(is_letter(mat[j].letter)){
+            letter = mat[j].letter;
+            out << " [label=\"" + letter + string("\"]");
+        }
+        out << "\n";
+        if(mat[j].right!=-1){
+            out << "\t" + to_string(j) + " -> " + to_string(mat[j].right) + "\n";
+        }
+    }
+    out << "}";
+    out.close();
+}
 #endif

@@ -14,11 +14,13 @@ class Node{
         Node(char c, int l, int r);
         void print();
         void shift(int i);
-    
-    private:
+
+        // to private
         char letter;
         int left;
         int right;
+    private:
+        
 };
 
 // Create an empty node that points to the right.
