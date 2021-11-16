@@ -35,7 +35,7 @@ void menu(){
         else if (in == "dot"){
             Aut.print_dot();
         }
-        else if (in == "p"){
+        else if (in == "p"){ // debug print
             Aut.print();
         }
         else{
@@ -46,8 +46,5 @@ void menu(){
 }
 
 int main(){
-    // Automaton Aut = Automaton();
-    // Aut.read_expr();
-    // Aut.print();
     menu();
 }

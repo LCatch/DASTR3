@@ -29,7 +29,6 @@ class Automaton{
         void print();
 
         void next_token(istringstream &is);
-        bool token_is_letter();
         char token; // TODO move to private
 
         void overwrite(Automaton Aut);
@@ -75,10 +74,7 @@ void Automaton::next_token(istringstream &is){
     cout << "NEXT: " << token << endl;
 }
 
-bool Automaton::token_is_letter(){
-    return (token >= 'a') && (token <= 'z');
-}
-
+// Debug print, prints all nodes from 1 to n
 void Automaton::print(){
     for (unsigned int i = 1; i < mat.size(); i++){
         cout << i << " : ";
@@ -86,6 +82,7 @@ void Automaton::print(){
     }
 }
 
+// Concats another automaton to the current automaton
 void Automaton::concat(Automaton Aut2) {
     int iAut1 = mat.size();
 
@@ -100,6 +97,7 @@ void Automaton::concat(Automaton Aut2) {
     f = mat.size() - 1;
 }
 
+// "stars" the current automaton
 void Automaton::star(){
     Node n = Node(' ', i, mat.size() + 1);
 
@@ -111,6 +109,7 @@ void Automaton::star(){
     f = mat.size() - 1;
 }
 
+// Adds another automaton to the current automaton
 void Automaton::add(Automaton Aut2){
     int fAut1 = mat.size() + Aut2.mat.size();
     int iAut2 = mat.size();
@@ -146,7 +145,7 @@ Automaton Automaton::Expr(istringstream &is) {
 Automaton Automaton::Term (istringstream &is) {
     cout << "TERMO" << endl;
     Automaton Aut1 = Fact(is);
-    if ( token_is_letter() | (token == '(') ){
+    if ( is_letter(token) | (token == '(') ){
         Automaton Aut2 = Term(is);
         Aut1.concat(Aut2);
     }
@@ -168,7 +167,7 @@ Automaton Automaton::Fact (istringstream &is) {
             cout << "bad shit" << endl;
         } //TODO exit or smt?
     }
-    else if ( token_is_letter() ){
+    else if ( is_letter(token) ){
         cout << "token got" << endl;
         Aut = Automaton(token); // TODO actually make a thing
         // Aut.print();
@@ -192,6 +191,7 @@ Automaton Automaton::Fact (istringstream &is) {
     return Aut;
 } // Fact
 
+// Overwrites the current Automaton with another automaton
 void Automaton::overwrite(Automaton Aut){
     mat.clear();
     for (unsigned int j=0; j<Aut.mat.size(); j++){
@@ -202,6 +202,8 @@ void Automaton::overwrite(Automaton Aut){
     f = Aut.f;
 }
 
+// Reads an expressinon given by the user from the input line
+// and overwrites the new expression into the current one
 void Automaton::read_expr(){
     Automaton Aut = Automaton();
     string line;
@@ -219,21 +221,22 @@ void Automaton::read_expr(){
 
 }
 
+// Dot-prints the current automaton into a file given by the user
 void Automaton::print_dot(){
     string filename;
     string letter;
-    cin.ignore();
+    cin.ignore(); // Ignore the first part of the cin
     getline(cin, filename);
     ofstream out(filename);
-    out << "digraph G {\n\trankdir=\"LR\" \n";
-    for(unsigned int j=1; j<mat.size()-1; j++){
-        out << "\t" + to_string(j) + " -> " + to_string(mat[j].left);
-        if(is_letter(mat[j].letter)){
-            letter = mat[j].letter;
+    out << "digraph G {\n\trankdir=\"LR\" \n"; // Standard beginning of the file
+    for(unsigned int j=1; j<mat.size()-1; j++){ 
+        out << "\t" + to_string(j) + " -> " + to_string(mat[j].left); // Every node has at least an arrow
+        if(is_letter(mat[j].letter)){ // If the transition uses a letter, label it this letter
+            letter = mat[j].letter; // This can only happen if a node has no right "target"
             out << " [label=\"" + letter + string("\"]");
         }
         out << "\n";
-        if(mat[j].right!=-1){
+        if(mat[j].right!=-1){ // If a node also has a right "target", also use this one
             out << "\t" + to_string(j) + " -> " + to_string(mat[j].right) + "\n";
         }
     }
