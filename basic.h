@@ -1,3 +1,8 @@
+// -------------------------------------------------
+// Datastructures assignment 2
+// Authors: Liya Charlaganova, Wouter Remmerswaal
+// -------------------------------------------------
+// Basic functions
 
 #ifndef BASIC_H
 #define BASIC_H
