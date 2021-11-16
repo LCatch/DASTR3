@@ -1,3 +1,13 @@
+// -------------------------------------------------
+// Datastructures assignment 2
+// Authors: Liya Charlaganova, Wouter Remmerswaal
+// -------------------------------------------------
+// Main file that prints the menu and takes the input from the user.
+// The whole program has the goal to take in a regex expression and then
+// check whether a string input matches the expression using an 
+// automaton.
+// (String matching has not yet been implemented)
+
 #include <iostream>
 #include <string>
 #include <vector>

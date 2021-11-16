@@ -1,3 +1,10 @@
+// -------------------------------------------------
+// Datastructures assignment 2
+// Authors: Liya Charlaganova, Wouter Remmerswaal
+// -------------------------------------------------
+// Automaton class that creates the automaton using recursive function
+// calls and then constructing the automaton bottom up. The automaton
+// itself is stored as a matrix.
 
 #ifndef AUTOMATON_H
 #define AUTOMATON_H
@@ -12,8 +19,8 @@
 
 using namespace std;
 
-int len_expr;
 
+// Automaton class
 class Automaton{
     public:
         Automaton();
@@ -29,31 +36,30 @@ class Automaton{
         void print();
 
         void next_token(istringstream &is);
-        char token; // TODO move to private
 
         void overwrite(Automaton Aut);
         void read_expr();
         void print_dot();
 
     private:
-        // char token;
-        vector<Node> mat;
-        // int len;
-        int i;
-        int f;
+        char token;         // stores the current token
+        vector<Node> mat;   // matrix that stores the automaton
+        int i;              // initial state of automaton
+        int f;              // final state of automaton
 };
 
+// Constructor for empty automaton
 Automaton::Automaton(){
     i = -1;
     f = -1;
     token = ' ';
-    len_expr = 0;
     mat.push_back(Node()); // add emtpy node at beginning
 }
 
+// Constructor for automaton which contains a single transition
+// from initial state to final state with a character 'letter'.
 Automaton::Automaton(char letter){
     token = ' ';
-    len_expr = 0;
     i = 1;
     f = 2;
     mat.push_back(Node()); // add emtpy node at beginning
@@ -61,17 +67,9 @@ Automaton::Automaton(char letter){
     mat.push_back(Node());
 }
 
+// Get next token.
 void Automaton::next_token(istringstream &is){
-    cout << "in next" << endl;
-    // if (cin.eof()){
-    //     cout << "eof" << endl;
-    //     token = ' ';
-    // }
-    // else{
-    //     cin >> token;
-    // }
     is >> token;
-    cout << "NEXT: " << token << endl;
 }
 
 // Debug print, prints all nodes from 1 to n
@@ -82,7 +80,7 @@ void Automaton::print(){
     }
 }
 
-// Concats another automaton to the current automaton
+// Concats another automaton to the current automaton.
 void Automaton::concat(Automaton Aut2) {
     int iAut1 = mat.size();
 
@@ -97,7 +95,7 @@ void Automaton::concat(Automaton Aut2) {
     f = mat.size() - 1;
 }
 
-// "stars" the current automaton
+// "stars" the current automaton.
 void Automaton::star(){
     Node n = Node(' ', i, mat.size() + 1);
 
@@ -109,7 +107,7 @@ void Automaton::star(){
     f = mat.size() - 1;
 }
 
-// Adds another automaton to the current automaton
+// Adds another automaton to the current automaton.
 void Automaton::add(Automaton Aut2){
     int fAut1 = mat.size() + Aut2.mat.size();
     int iAut2 = mat.size();
@@ -129,21 +127,19 @@ void Automaton::add(Automaton Aut2){
     i = mat.size() - 2;
 }
 
-
+// Creates an expression.
 Automaton Automaton::Expr(istringstream &is) {
-    cout << "EXPR" << endl; 
     Automaton Aut1 = Term(is);
-    // Aut1.print();
     if ( token == '|' ){ 
         next_token(is);
         Automaton Aut2 = Expr(is);
         Aut1.add(Aut2);
     }
     return Aut1;
-} // Expr
+}
 
+// Creates a term.
 Automaton Automaton::Term (istringstream &is) {
-    cout << "TERMO" << endl;
     Automaton Aut1 = Fact(is);
     if ( is_letter(token) | (token == '(') ){
         Automaton Aut2 = Term(is);
@@ -152,11 +148,9 @@ Automaton Automaton::Term (istringstream &is) {
     return Aut1;
 } // Term
 
+// Creates a factor, this is the smallest possible element.
 Automaton Automaton::Fact (istringstream &is) {
-    cout << "FACT" << endl;
-    // cout << "TOK: " << token << endl;
     Automaton Aut = Automaton();
-    cout << "tok: " << token << endl;
     if ( token == '('){ 
         next_token(is);
         Aut = Expr(is);
@@ -164,23 +158,19 @@ Automaton Automaton::Fact (istringstream &is) {
             next_token(is);
         }
         else{
-            cout << "bad shit" << endl;
-        } //TODO exit or smt?
+            cout << "ERROR" << endl;
+            return Aut;
+        } 
     }
     else if ( is_letter(token) ){
-        cout << "token got" << endl;
-        Aut = Automaton(token); // TODO actually make a thing
-        // Aut.print();
-        // cout << "bb" << endl;
+        Aut = Automaton(token);
         next_token(is);
-        // cout << "aaa" << endl;
     }
     else if (token == '$'){
-        cout << "EMPTY TOKEN" << endl;
         return Aut;
     }
     else{
-        cout << "bad shit 2" << endl; // TODODOD
+        cout << "ERROR" << endl;
         return Aut;
     }
 
@@ -189,9 +179,9 @@ Automaton Automaton::Fact (istringstream &is) {
         next_token(is);
     }
     return Aut;
-} // Fact
+}
 
-// Overwrites the current Automaton with another automaton
+// Overwrites the current Automaton with another automaton.
 void Automaton::overwrite(Automaton Aut){
     mat.clear();
     for (unsigned int j=0; j<Aut.mat.size(); j++){
@@ -203,16 +193,15 @@ void Automaton::overwrite(Automaton Aut){
 }
 
 // Reads an expressinon given by the user from the input line
-// and overwrites the new expression into the current one
+// and overwrites the new expression into the current one.
 void Automaton::read_expr(){
     Automaton Aut = Automaton();
     string line;
     string str;
 
     getline(cin, line);
-    line += "$";
+    line += "$";        // adding endline character
     istringstream is(line);
-    // len_expr = line.size();
     
 
     Aut.next_token(is);
@@ -221,7 +210,7 @@ void Automaton::read_expr(){
 
 }
 
-// Dot-prints the current automaton into a file given by the user
+// Dot-prints the current automaton into a file given by the user.s
 void Automaton::print_dot(){
     string filename;
     string letter;
