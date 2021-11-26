@@ -44,6 +44,8 @@ class Automaton{
 
         void e_space_rec(int n, vector<int> &e_items);
         vector<int> e_space(vector<int> space);
+        vector<int> e_space_letter(vector<int> space, char letter);
+        void match();
 
     private:
         char token;         // stores the current token
@@ -239,24 +241,60 @@ void Automaton::print_dot(){
 
 // Add items to e_items which you can epsilon-reach via node n
 void Automaton::e_space_rec(int n, vector<int> &e_items){
-    if(find(e_items.begin(), e_items.end(), n) != e_items.end()){
-        e_items.push_back(n);
-        if(mat[n].letter==' '){
-            e_space_rec(mat[n].left, e_items);
+    if(find(e_items.begin(), e_items.end(), n) == e_items.end()){ // If the current item is not yet in the items list
+        e_items.push_back(n); // Add the item
+        if(!is_letter(mat[n].letter) && mat[n].left!=-1){ // If it has a possible epsilon jump 
+            e_space_rec(mat[n].left, e_items); // Go again from the left node
             if(mat[n].right!=-1){
-                e_space_rec(mat[n].right, e_items);
+                e_space_rec(mat[n].right, e_items); // Go again from the right node
             }
         }
     }
 } 
 
+
 // Return the whole epsilon space of a set of nodes 
 vector<int> Automaton::e_space(vector<int> space){
-    vector<int> new_e_space;
-    for(unsigned int i=0; i<space.size();i++){
+    vector<int> new_e_space; 
+    for(unsigned int i=0; i<space.size();i++){ // For every node in space we check which nodes we can epsilon reach 
         e_space_rec(space[i], new_e_space);
     }
     return new_e_space;
+}
+
+// Determine the node which you can reach via space with a forced node jump with "letter"
+vector<int> Automaton::e_space_letter(vector<int> space, char letter){
+    vector<int> new_e_space_letter; // Start with an empty space
+    space = e_space(space); // Determine the epsilon space of the starting space
+    for(unsigned int i=0; i<space.size(); i++){ // For every item in this space 
+        if(mat[space[i]].letter==letter){ // We check if we can go to another node via the letter
+            if(find(new_e_space_letter.begin(), new_e_space_letter.end(), mat[space[i]].left) == new_e_space_letter.end()){
+                new_e_space_letter.push_back(mat[space[i]].left); // Add the new letter to the new space
+            }
+        }
+    }
+    return new_e_space_letter;
+}
+
+void Automaton::match(){
+    string input;
+    cin.ignore(); // Ignore the first part of the cin
+    getline(cin, input);
+    if(mat.size()==1){ // No expression or empty expression in the automaton
+        cout << "no expression to match" << endl;
+        return;
+    }
+    vector<int> space;
+    space.push_back(i); // Initial state
+    for(char& character : input) { // For every character in the matchable string
+        space = e_space_letter(space, character); // We determine the space when we use this letter
+    }
+    space = e_space(space); // From the last space we take the epsilon space
+    int end_node = mat.size()-1; // End node
+    if(find(space.begin(), space.end(), end_node) != space.end()){
+        cout << "winnings"<< endl; // If this epsilon space contains the end node we are happy
+    }
+    
 }
 
 
