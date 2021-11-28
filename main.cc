@@ -29,7 +29,7 @@ void menu(){
         cout << "'exp' <expression> to read in an expression." << endl;
         cout << "'dot' <file> to write the expression in DOT";
         cout << " notation to 'file'." << endl;
-        // cout << "'mat' <string> to match string to expression" << endl;
+        cout << "'mat' <string> to match string to expression" << endl;
         cout << "'end' to exit the program" << endl;
         cout << endl;
         
@@ -47,6 +47,9 @@ void menu(){
         }
         else if (in == "p"){ // debug print
             Aut.print();
+        }
+        else if (in == "mat"){ 
+            Aut.match();
         }
         else{
             cout << "Command unclear" << endl;
