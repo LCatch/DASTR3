@@ -121,7 +121,7 @@ Automaton Automaton::Fact (istringstream &is) {
             next_token(is);
         }
         else{
-            cout << "ERROR" << endl;
+            cout << "Invalid expression" << endl;
             return Aut;
         } 
     }
@@ -133,7 +133,7 @@ Automaton Automaton::Fact (istringstream &is) {
         return Aut;
     }
     else{
-        cout << "ERROR" << endl;
+        cout << "Invalid expression" << endl;
         return Aut;
     }
 
@@ -249,7 +249,9 @@ void Automaton::match(){
     space = e_space(space); // From the last space we take the epsilon space
     int end_node = mat.size()-1; // End node
     if(find(space.begin(), space.end(), end_node) != space.end()){
-        cout << "winnings"<< endl; // If this epsilon space contains the end node we are happy
+        cout << "match"<< endl; // If this epsilon space contains the end node we are happy
     }
-    
+    else{
+        cout << "geen match" << endl;
+    }
 }
