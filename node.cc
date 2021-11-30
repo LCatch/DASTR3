@@ -1,3 +1,11 @@
+
+// -------------------------------------------------
+// Datastructures assignment 2
+// Authors: Liya Charlaganova, Wouter Remmerswaal
+// -------------------------------------------------
+// Implementation of node.h
+
+
 #include <iostream>
 #include <vector>
 #include <string>

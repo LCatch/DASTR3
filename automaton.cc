@@ -1,3 +1,8 @@
+// -------------------------------------------------
+// Datastructures assignment 2
+// Authors: Liya Charlaganova, Wouter Remmerswaal
+// -------------------------------------------------
+// Implementation of automaton.h
 
 #include <iostream>
 #include <algorithm>
