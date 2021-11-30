@@ -237,19 +237,27 @@ void Automaton::match(){
     string input;
     cin.ignore(); // Ignore the first part of the cin
     getline(cin, input);
-    if(mat.size()==1){ // No expression or empty expression in the automaton
-        cout << "no expression to match" << endl;
-        return;
+    if(input=="$"){
+        if(mat.size()==1){ // No expression or empty expression in the automaton
+            cout << "match" << endl;
+            return;
+        }
+        else{
+            input = "";
+        }
     }
+    
     vector<int> space;
     space.push_back(i); // Initial state
     for(char& character : input) { // For every character in the matchable string
         space = e_space_letter(space, character); // We determine the space when we use this letter
     }
     space = e_space(space); // From the last space we take the epsilon space
-    int end_node = mat.size()-1; // End node
-    if(find(space.begin(), space.end(), end_node) != space.end()){
-        cout << "winnings"<< endl; // If this epsilon space contains the end node we are happy
+    if(find(space.begin(), space.end(), f) != space.end()){
+        cout << "match"<< endl; // If this epsilon space contains the end node we are happy
     }
-    
+    else{
+        cout << "no match" << endl;
+    }    
+    return;
 }
