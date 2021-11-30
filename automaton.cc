@@ -13,6 +13,7 @@ using namespace std;
 
 // Constructor for empty automaton
 Automaton::Automaton(){
+    error = false;
     i = -1;
     f = -1;
     token = ' ';
@@ -22,6 +23,7 @@ Automaton::Automaton(){
 // Constructor for automaton which contains a single transition
 // from initial state to final state with a character 'letter'.
 Automaton::Automaton(char letter){
+    error = false;
     token = ' ';
     i = 1;
     f = 2;
@@ -43,19 +45,46 @@ void Automaton::print(){
     }
 }
 
+void Automaton::clear(){
+    error = false;
+    i = -1;
+    f = -1;
+    token = ' ';
+    mat.clear();
+    mat.push_back(Node());
+}
+
+bool Automaton::contain_errors(Automaton Aut2){
+    return error | Aut2.has_error();
+}
+
+bool Automaton::has_error(){
+    return error;
+}
+
+void Automaton::set_error(bool err){
+    error = err;
+}
+
 // Concats another automaton to the current automaton.
 void Automaton::concat(Automaton Aut2) {
-    int iAut1 = mat.size();
-
-    mat.at(f) = Node(' ', Aut2.i + iAut1 - 1, -1);;
-
-    for (unsigned int i=1; i < Aut2.mat.size() - 1; i++){
-        Node n = Aut2.mat.at(i);
-        n.shift(iAut1 - 1);
-        mat.push_back(n);
+    if (contain_errors(Aut2)){
+        clear();
+        error = true;
     }
-    mat.push_back(Node());
-    f = mat.size() - 1;
+    else{
+        int iAut1 = mat.size();
+
+        mat.at(f) = Node(' ', Aut2.i + iAut1 - 1, -1);;
+
+        for (unsigned int i=1; i < Aut2.mat.size() - 1; i++){
+            Node n = Aut2.mat.at(i);
+            n.shift(iAut1 - 1);
+            mat.push_back(n);
+        }
+        mat.push_back(Node());
+        f = mat.size() - 1;
+    }
 }
 
 // "stars" the current automaton.
@@ -72,22 +101,29 @@ void Automaton::star(){
 
 // Adds another automaton to the current automaton.
 void Automaton::add(Automaton Aut2){
-    int fAut1 = mat.size() + Aut2.mat.size();
-    int iAut2 = mat.size();
-
-    mat.back() = Node(' ', fAut1, -1);
-
-    for (unsigned int j=1; j < Aut2.mat.size(); j++){
-        Node n = Aut2.mat.at(j);
-        n.shift(iAut2 - 1);
-        mat.push_back(n);
+    if (contain_errors(Aut2)){
+        clear();
+        error = true;
     }
-    mat.back() = Node(' ', fAut1, -1);
-    mat.push_back(Node(' ', i, iAut2) );
-    mat.push_back(Node());
 
-    f = mat.size() - 1;
-    i = mat.size() - 2;
+    else{
+        int fAut1 = mat.size() + Aut2.mat.size();
+        int iAut2 = mat.size();
+
+        mat.back() = Node(' ', fAut1, -1);
+
+        for (unsigned int j=1; j < Aut2.mat.size(); j++){
+            Node n = Aut2.mat.at(j);
+            n.shift(iAut2 - 1);
+            mat.push_back(n);
+        }
+        mat.back() = Node(' ', fAut1, -1);
+        mat.push_back(Node(' ', i, iAut2) );
+        mat.push_back(Node());
+
+        f = mat.size() - 1;
+        i = mat.size() - 2;
+    }
 }
 
 // Creates an expression.
@@ -122,6 +158,7 @@ Automaton Automaton::Fact (istringstream &is) {
         }
         else{
             cout << "Invalid expression" << endl;
+            Aut.set_error(true);
             return Aut;
         } 
     }
@@ -134,6 +171,7 @@ Automaton Automaton::Fact (istringstream &is) {
     }
     else{
         cout << "Invalid expression" << endl;
+        Aut.set_error(true);
         return Aut;
     }
 

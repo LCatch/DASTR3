@@ -30,8 +30,13 @@ class Automaton{
         void next_token(istringstream &is);
 
         void overwrite(Automaton Aut);
+        void clear();
         void read_expr();
         void print_dot();
+
+        bool contain_errors(Automaton Aut2);
+        bool has_error();
+        void set_error(bool err);
 
         void e_space_rec(int n, vector<int> &e_items);
         vector<int> e_space(vector<int> space);
@@ -43,6 +48,7 @@ class Automaton{
         vector<Node> mat;   // matrix that stores the automaton
         int i;              // initial state of automaton
         int f;              // final state of automaton
+        bool error;
 };
 
 #endif
