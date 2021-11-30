@@ -121,7 +121,7 @@ Automaton Automaton::Fact (istringstream &is) {
             next_token(is);
         }
         else{
-            cout << "ERROR" << endl;
+            cout << "Invalid expression" << endl;
             return Aut;
         } 
     }
@@ -133,7 +133,7 @@ Automaton Automaton::Fact (istringstream &is) {
         return Aut;
     }
     else{
-        cout << "ERROR" << endl;
+        cout << "Invalid expression" << endl;
         return Aut;
     }
 
